@@ -22,7 +22,7 @@
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test",
-    "publish:npm": "npm publish",
+    "publish:npm": "npm publish --passWithNoTests",
     "publish:dry": "npm publish --dry-run"
   },
   "keywords": [
@@ -48,7 +48,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/jest": "^29.5.8",
-    "@types/node": "^20.9.0",
+    "@types/node": "^20.19.22",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "eslint": "^8.54.0",

@@ -221,6 +221,416 @@ declare global {
     ReqQueue: ReqQueue;
     wx: any;
   }
+
+  /**
+   * UniApp 全局对象类型定义
+   */
+  const uni: {
+    /**
+     * 发起网络请求
+     * @param options 请求配置
+     */
+    request: (options: {
+      /** 请求的绝对路径 */
+      url: string;
+      /** 请求的参数 */
+      data?: any;
+      /** 请求的 header，header 中不能设置 Referer */
+      header?: Record<string, string>;
+      /** 请求方法 */
+      method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'HEAD' | 'OPTIONS' | 'TRACE';
+      /** 响应的数据类型 */
+      dataType?: string;
+      /** 响应的数据类型 */
+      responseType?: 'text' | 'arraybuffer';
+      /** 超时时间，单位 ms */
+      timeout?: number;
+      /** 接口调用成功的回调函数 */
+      success?: (result: {
+        /** 开发者服务器返回的数据 */
+        data: any;
+        /** 开发者服务器返回的 HTTP 状态码 */
+        statusCode: number;
+        /** 开发者服务器返回的 HTTP Response Header */
+        header: Record<string, string>;
+        /** 网络请求过程中一些调试信息 */
+        cookies?: string[];
+      }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: (error: {
+        /** 错误信息 */
+        errMsg: string;
+      }) => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: (result: any) => void;
+    }) => void;
+
+    /**
+     * 显示消息提示框
+     * @param options 提示配置
+     */
+    showToast: (options: {
+      /** 提示的内容 */
+      title: string;
+      /** 图标 */
+      icon?: 'success' | 'loading' | 'none';
+      /** 自定义图标的本地路径 */
+      image?: string;
+      /** 提示的延迟时间 */
+      duration?: number;
+      /** 是否显示透明蒙层，防止触摸穿透 */
+      mask?: boolean;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 隐藏消息提示框
+     */
+    hideToast: () => void;
+
+    /**
+     * 显示 loading 提示框
+     * @param options loading配置
+     */
+    showLoading: (options: {
+      /** 提示的内容 */
+      title: string;
+      /** 是否显示透明蒙层，防止触摸穿透 */
+      mask?: boolean;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 隐藏 loading 提示框
+     */
+    hideLoading: () => void;
+
+    /**
+     * 显示模态对话框
+     * @param options 对话框配置
+     */
+    showModal: (options: {
+      /** 提示的标题 */
+      title?: string;
+      /** 提示的内容 */
+      content?: string;
+      /** 是否显示取消按钮 */
+      showCancel?: boolean;
+      /** 取消按钮的文字，最多 4 个字符 */
+      cancelText?: string;
+      /** 取消按钮的文字颜色，必须是 16 进制格式的颜色字符串 */
+      cancelColor?: string;
+      /** 确认按钮的文字，最多 4 个字符 */
+      confirmText?: string;
+      /** 确认按钮的文字颜色，必须是 16 进制格式的颜色字符串 */
+      confirmColor?: string;
+      /** 接口调用成功的回调函数 */
+      success?: (result: {
+        /** 为 true 时，表示用户点击了确定按钮 */
+        confirm: boolean;
+        /** 为 true 时，表示用户点击了取消 */
+        cancel: boolean;
+      }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 将数据存储在本地缓存中指定的 key 中
+     * @param options 存储配置
+     */
+    setStorage: (options: {
+      /** 本地缓存中指定的 key */
+      key: string;
+      /** 需要存储的内容 */
+      data: any;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
+     * @param key 本地缓存中指定的 key
+     * @param data 需要存储的内容
+     */
+    setStorageSync: (key: string, data: any) => void;
+
+    /**
+     * 从本地缓存中异步获取指定 key 的内容
+     * @param options 获取配置
+     */
+    getStorage: (options: {
+      /** 本地缓存中指定的 key */
+      key: string;
+      /** 接口调用成功的回调函数 */
+      success?: (result: { data: any }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 从本地缓存中同步获取指定 key 的内容
+     * @param key 本地缓存中指定的 key
+     * @returns 缓存的内容
+     */
+    getStorageSync: (key: string) => any;
+
+    /**
+     * 从本地缓存中移除指定 key
+     * @param options 移除配置
+     */
+    removeStorage: (options: {
+      /** 本地缓存中指定的 key */
+      key: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 从本地缓存中同步移除指定 key
+     * @param key 本地缓存中指定的 key
+     */
+    removeStorageSync: (key: string) => void;
+
+    /**
+     * 清理本地数据缓存
+     * @param options 清理配置
+     */
+    clearStorage: (options?: {
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 同步清理本地数据缓存
+     */
+    clearStorageSync: () => void;
+
+    /**
+     * 获取当前的地理位置、速度
+     * @param options 位置配置
+     */
+    getLocation: (options: {
+      /** 默认为 wgs84 的 gps 坐标，如果要返回直接给 openLocation 用的火星坐标，可传入 'gcj02' */
+      type?: 'wgs84' | 'gcj02';
+      /** 传入 true 会返回高度信息，由于获取高度需要较高精确度，会减慢接口返回速度 */
+      altitude?: boolean;
+      /** 接口调用成功的回调函数 */
+      success?: (result: {
+        /** 纬度，范围为 -90~90，负数表示南纬 */
+        latitude: number;
+        /** 经度，范围为 -180~180，负数表示西经 */
+        longitude: number;
+        /** 速度，单位 m/s */
+        speed: number;
+        /** 位置的精确度 */
+        accuracy: number;
+        /** 高度，单位 m */
+        altitude?: number;
+        /** 垂直精度，单位 m（Android 无法获取，返回 0） */
+        verticalAccuracy?: number;
+        /** 水平精度，单位 m */
+        horizontalAccuracy?: number;
+      }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 保存图片到系统相册
+     * @param options 保存配置
+     */
+    saveImageToPhotosAlbum: (options: {
+      /** 图片文件路径，可以是临时文件路径或永久文件路径，不支持网络图片路径 */
+      filePath: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 获取系统信息
+     * @param options 获取配置
+     */
+    getSystemInfo: (options: {
+      /** 接口调用成功的回调函数 */
+      success?: (result: {
+        /** 设备品牌 */
+        brand: string;
+        /** 设备型号 */
+        model: string;
+        /** 设备像素比 */
+        pixelRatio: number;
+        /** 屏幕宽度，单位px */
+        screenWidth: number;
+        /** 屏幕高度，单位px */
+        screenHeight: number;
+        /** 可使用窗口宽度，单位px */
+        windowWidth: number;
+        /** 可使用窗口高度，单位px */
+        windowHeight: number;
+        /** 状态栏的高度，单位px */
+        statusBarHeight: number;
+        /** 微信设置的语言 */
+        language: string;
+        /** 微信版本号 */
+        version: string;
+        /** 操作系统及版本 */
+        system: string;
+        /** 客户端平台 */
+        platform: string;
+        /** 用户字体大小（单位px）。以微信客户端「我-设置-通用-字体大小」中的设置为准 */
+        fontSizeSetting: number;
+        /** 客户端基础库版本 */
+        SDKVersion: string;
+      }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 获取系统信息同步接口
+     * @returns 系统信息
+     */
+    getSystemInfoSync: () => {
+      /** 设备品牌 */
+      brand: string;
+      /** 设备型号 */
+      model: string;
+      /** 设备像素比 */
+      pixelRatio: number;
+      /** 屏幕宽度，单位px */
+      screenWidth: number;
+      /** 屏幕高度，单位px */
+      screenHeight: number;
+      /** 可使用窗口宽度，单位px */
+      windowWidth: number;
+      /** 可使用窗口高度，单位px */
+      windowHeight: number;
+      /** 状态栏的高度，单位px */
+      statusBarHeight: number;
+      /** 微信设置的语言 */
+      language: string;
+      /** 微信版本号 */
+      version: string;
+      /** 操作系统及版本 */
+      system: string;
+      /** 客户端平台 */
+      platform: string;
+      /** 用户字体大小（单位px）。以微信客户端「我-设置-通用-字体大小」中的设置为准 */
+      fontSizeSetting: number;
+      /** 客户端基础库版本 */
+      SDKVersion: string;
+    };
+
+    /**
+     * 关闭当前页面，跳转到应用内的某个页面
+     * @param options 跳转配置
+     */
+    redirectTo: (options: {
+      /** 需要跳转的应用内非 tabBar 的页面的路径，路径后可以带参数 */
+      url: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 保留当前页面，跳转到应用内的某个页面
+     * @param options 跳转配置
+     */
+    navigateTo: (options: {
+      /** 需要跳转的应用内非 tabBar 的页面的路径，路径后可以带参数 */
+      url: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 关闭当前页面，返回上一页面或多级页面
+     * @param options 返回配置
+     */
+    navigateBack: (options?: {
+      /** 返回的页面数，如果 delta 大于现有页面数，则返回到首页 */
+      delta?: number;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
+     * @param options 跳转配置
+     */
+    switchTab: (options: {
+      /** 需要跳转的 tabBar 页面的路径（需在 app.json 的 tabBar 字段定义的页面），路径后不能带参数 */
+      url: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+
+    /**
+     * 关闭所有页面，打开到应用内的某个页面
+     * @param options 跳转配置
+     */
+    reLaunch: (options: {
+      /** 需要跳转的应用内页面路径，路径后可以带参数 */
+      url: string;
+      /** 接口调用成功的回调函数 */
+      success?: () => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+    }) => void;
+  };
 }
 
 /**

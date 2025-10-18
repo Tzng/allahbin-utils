@@ -41,10 +41,13 @@ if (typeof uni !== 'undefined' && typeof uni.request !== 'undefined') {
     return new Promise((resolve, reject) => {
       // @ts-ignore
       uni.request({
+        // @ts-ignore
         method: config.method!.toUpperCase(),
+        // @ts-ignore
         url: config.url,
         header: { ...config.headers },
         data: config.data,
+        // @ts-ignore
         responseType: config.responseType,
         complete: (response: any) => {
           // 处理响应
