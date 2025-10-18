@@ -93,8 +93,20 @@ export interface IOptions61<T> {
 /**
  * 由label和value和checked和disabled组成的选项
  */
-export interface IOptions<T, O = Record<string, any>, K = string | number | bigint>
-  extends IOptions6<T, K> {
+export interface IOptions<T, O = Record<string, any>, K = string | number | bigint> {
+  label: any;
+  value: T;
+  checked?: boolean;
+  disabled?: boolean;
+  text?: string;
+  /**
+   * 循环用的key，不一定有值，需要和后端确认！
+   */
+  key: K;
+  /**
+   * 颜色
+   */
+  color?: string;
   /**
    * 描述信息
    */
