@@ -8,9 +8,23 @@ export * from './core/dateUtils';
 export * from './core/numberUtils';
 export * from './core/validationUtils';
 export * from './core/asyncUtils';
+export * from './core/colorUtils';
+export * from './core/cryptoUtils';
+export * from './core/pageUtils';
 
 // 浏览器专用工具函数
 export * from './browser/domUtils';
+export * from './browser/cookieUtils';
+export * from './browser/urlUtils';
+
+// 请求工具函数
+export * from './request';
+
+// UniApp 工具函数
+export * from './uniapp';
+
+// 类型定义
+export * from './types';
 
 // 版本信息
 export const version = '1.0.0';
