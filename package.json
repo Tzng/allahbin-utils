@@ -1,10 +1,10 @@
 {
   "name": "allahbin-utils",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A utility library for common JavaScript/TypeScript functions",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "type": "module",
   "files": [
     "dist",
@@ -21,7 +21,9 @@
     "lint:fix": "eslint src --ext .ts,.js --fix",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test",
+    "publish:npm": "npm publish",
+    "publish:dry": "npm publish --dry-run"
   },
   "keywords": [
     "utils",
@@ -30,16 +32,16 @@
     "typescript",
     "library"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "Tzng",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/allahbin-utils.git"
+    "url": "https://github.com/Tzng/allahbin-utils.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/allahbin-utils/issues"
+    "url": "https://github.com/Tzng/allahbin-utils/issues"
   },
-  "homepage": "https://github.com/yourusername/allahbin-utils#readme",
+  "homepage": "https://github.com/Tzng/allahbin-utils#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",

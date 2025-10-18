@@ -170,6 +170,70 @@ pnpm run lint:fix
 pnpm run type-check
 ```
 
+## 发布到 NPM
+
+### 首次发布
+
+1. **检查当前 registry**：
+   ```bash
+   npm config get registry
+   ```
+
+2. **设置为 npm 官方源**：
+   ```bash
+   npm config set registry https://registry.npmjs.org/
+   ```
+
+3. **登录 npm 账号**：
+   ```bash
+   npm login --registry=https://registry.npmjs.org/
+   ```
+
+4. **验证登录状态**：
+   ```bash
+   npm whoami --registry=https://registry.npmjs.org/
+   ```
+
+5. **测试发布（推荐先执行）**：
+   ```bash
+   pnpm run publish:dry
+   ```
+
+6. **正式发布**：
+   ```bash
+   pnpm run publish:npm
+   ```
+
+### 后续版本发布
+
+1. **更新版本号**：
+   ```bash
+   npm version patch   # 修复版本 1.0.0 -> 1.0.1
+   npm version minor   # 功能版本 1.0.0 -> 1.1.0  
+   npm version major   # 重大版本 1.0.0 -> 2.0.0
+   ```
+
+2. **发布新版本**：
+   ```bash
+   pnpm run publish:npm
+   ```
+
+### 发布前自动执行
+
+- 🧹 清理旧的构建文件
+- 🔨 重新构建项目
+- 🧪 运行所有测试
+- ✅ 只有测试通过才能发布
+
+### 注意事项
+
+- 📝 如果平时使用淘宝镜像源，发布时必须切换到 npm 官方源
+- 🔐 登录时需要输入 npm 用户名、密码和邮箱
+- ✅ 发布完成后可以切换回常用的镜像源：
+  ```bash
+  npm config set registry https://registry.npmmirror.com/
+  ```
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
