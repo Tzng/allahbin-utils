@@ -6,53 +6,6 @@
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "type": "module",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/index.js"
-    },
-    "./string": {
-      "types": "./dist/string/index.d.ts",
-      "import": "./dist/esm/string/index.js",
-      "require": "./dist/string/index.js"
-    },
-    "./array": {
-      "types": "./dist/array/index.d.ts",
-      "import": "./dist/esm/array/index.js",
-      "require": "./dist/array/index.js"
-    },
-    "./object": {
-      "types": "./dist/object/index.d.ts",
-      "import": "./dist/esm/object/index.js",
-      "require": "./dist/object/index.js"
-    },
-    "./date": {
-      "types": "./dist/date/index.d.ts",
-      "import": "./dist/esm/date/index.js",
-      "require": "./dist/date/index.js"
-    },
-    "./number": {
-      "types": "./dist/number/index.d.ts",
-      "import": "./dist/esm/number/index.js",
-      "require": "./dist/number/index.js"
-    },
-    "./validation": {
-      "types": "./dist/validation/index.d.ts",
-      "import": "./dist/esm/validation/index.js",
-      "require": "./dist/validation/index.js"
-    },
-    "./async": {
-      "types": "./dist/async/index.d.ts",
-      "import": "./dist/esm/async/index.js",
-      "require": "./dist/async/index.js"
-    },
-    "./dom": {
-      "types": "./dist/dom/index.d.ts",
-      "import": "./dist/esm/dom/index.js",
-      "require": "./dist/dom/index.js"
-    }
-  },
   "files": [
     "dist",
     "README.md",
@@ -89,6 +42,7 @@
   "homepage": "https://github.com/yourusername/allahbin-utils#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/jest": "^29.5.8",

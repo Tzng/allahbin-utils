@@ -180,7 +180,7 @@ export function getUpdateUrl(href: string, params: Record<string, string>): stri
   if (!window) {
     return '';
   }
-  const searchStr = window.location.href;
+  const searchStr = href || window.location.href;
   const oldParams = getUrlParams(searchStr);
   const newParams = { ...oldParams, ...params };
   // 问号前面的
