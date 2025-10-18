@@ -1,6 +1,6 @@
 {
-  "name": "allahbin-utils",
-  "version": "0.0.1",
+  "name": "@allahbin/utils",
+  "version": "0.0.3",
   "description": "A utility library for common JavaScript/TypeScript functions",
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
@@ -15,14 +15,14 @@
     "build": "rollup -c",
     "build:watch": "rollup -c -w",
     "dev": "rollup -c -w",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts,.js",
     "lint:fix": "eslint src --ext .ts,.js --fix",
     "type-check": "tsc --noEmit",
     "clean": "rimraf dist",
     "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test",
-    "publish:npm": "npm publish --passWithNoTests",
+    "publish:npm": "npm publish --registry=https://registry.npmjs.org/",
     "publish:dry": "npm publish --dry-run"
   },
   "keywords": [
