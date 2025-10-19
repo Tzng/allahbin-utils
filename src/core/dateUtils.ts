@@ -14,23 +14,8 @@ const dateUtils = {
    * @param format 格式字符串，如 'YYYY-MM-DD HH:mm:ss'
    * @returns 格式化后的日期字符串
    */
-  formatDate(date: Date | number, format = 'YYYY-MM-DD HH:mm:ss'): string {
-    const d = new Date(date);
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
-
-    return format
-      .replace('YYYY', String(year))
-      .replace('MM', month)
-      .replace('DD', day)
-      .replace('HH', hours)
-      .replace('mm', minutes)
-      .replace('ss', seconds);
+  formatDate(date: Date | number | string, format = 'YYYY-MM-DD HH:mm:ss'): string {
+    return dayjs(date).format(format);
   },
 
   /**
@@ -38,10 +23,10 @@ const dateUtils = {
    * @param date 日期对象或时间戳
    * @returns 相对时间描述，如 '2小时前'
    */
-  timeAgo(date: Date | number): string {
-    const now = new Date();
-    const target = new Date(date);
-    const diff = now.getTime() - target.getTime();
+  timeAgo(date: Date | number | string): string {
+    const now = dayjs();
+    const target = dayjs(date);
+    const diff = now.diff(target);
 
     const minute = 60 * 1000;
     const hour = minute * 60;
@@ -72,34 +57,20 @@ const dateUtils = {
    * @returns 新的日期对象
    */
   addTime(
-    date: Date | number,
+    date: Date | number | string,
     amount: number,
     unit: 'years' | 'months' | 'days' | 'hours' | 'minutes' | 'seconds'
   ): Date {
-    const d = new Date(date);
+    const unitMap = {
+      years: 'year',
+      months: 'month',
+      days: 'day',
+      hours: 'hour',
+      minutes: 'minute',
+      seconds: 'second'
+    } as const;
 
-    switch (unit) {
-      case 'years':
-        d.setFullYear(d.getFullYear() + amount);
-        break;
-      case 'months':
-        d.setMonth(d.getMonth() + amount);
-        break;
-      case 'days':
-        d.setDate(d.getDate() + amount);
-        break;
-      case 'hours':
-        d.setHours(d.getHours() + amount);
-        break;
-      case 'minutes':
-        d.setMinutes(d.getMinutes() + amount);
-        break;
-      case 'seconds':
-        d.setSeconds(d.getSeconds() + amount);
-        break;
-    }
-
-    return d;
+    return dayjs(date).add(amount, unitMap[unit]).toDate();
   },
 
   /**
@@ -109,32 +80,13 @@ const dateUtils = {
    * @returns 包含开始和结束日期的对象
    */
   getDateRange(
-    date: Date | number,
+    date: Date | number | string,
     unit: 'day' | 'week' | 'month' | 'year'
   ): { start: Date; end: Date } {
-    const d = new Date(date);
-    let start: Date;
-    let end: Date;
-
-    switch (unit) {
-      case 'day':
-        start = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-        end = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
-        break;
-      case 'week':
-        const dayOfWeek = d.getDay();
-        start = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dayOfWeek);
-        end = new Date(d.getFullYear(), d.getMonth(), d.getDate() - dayOfWeek + 7);
-        break;
-      case 'month':
-        start = new Date(d.getFullYear(), d.getMonth(), 1);
-        end = new Date(d.getFullYear(), d.getMonth() + 1, 1);
-        break;
-      case 'year':
-        start = new Date(d.getFullYear(), 0, 1);
-        end = new Date(d.getFullYear() + 1, 0, 1);
-        break;
-    }
+    const d = dayjs(date);
+    
+    const start = d.startOf(unit).toDate();
+    const end = d.endOf(unit).add(1, 'millisecond').toDate();
 
     return { start, end };
   },
@@ -145,13 +97,8 @@ const dateUtils = {
    * @param date2 日期2
    * @returns 是否为同一天
    */
-  isSameDay(date1: Date | number, date2: Date | number): boolean {
-    const d1 = new Date(date1);
-    const d2 = new Date(date2);
-
-    return d1.getFullYear() === d2.getFullYear() &&
-      d1.getMonth() === d2.getMonth() &&
-      d1.getDate() === d2.getDate();
+  isSameDay(date1: Date | number | string, date2: Date | number | string): boolean {
+    return dayjs(date1).isSame(dayjs(date2), 'day');
   },
 
   /**
@@ -170,7 +117,7 @@ const dateUtils = {
    * @returns 天数
    */
   getDaysInMonth(year: number, month: number): number {
-    return new Date(year, month + 1, 0).getDate();
+    return dayjs().year(year).month(month).daysInMonth();
   },
 
   /**
@@ -180,7 +127,7 @@ const dateUtils = {
    */
   getYearOptions(num: number = 3): Array<{ id: number; text: number }> {
     const yearList: Array<{ id: number; text: number }> = [];
-    const currentYear = new Date().getFullYear();
+    const currentYear = dayjs().year();
     for (let i = 0; i < num; i += 1) {
       const year = currentYear + i;
       yearList.push({
@@ -198,7 +145,7 @@ const dateUtils = {
    */
   getPastYearOptions(num: number = 3): Array<{ id: number; text: number }> {
     const yearList: Array<{ id: number; text: number }> = [];
-    const currentYear = new Date().getFullYear();
+    const currentYear = dayjs().year();
     for (let i = 0; i < num; i += 1) {
       const year = currentYear - i;
       yearList.push({
@@ -207,6 +154,40 @@ const dateUtils = {
       });
     }
     return yearList;
+  },
+
+  /**
+   * 格式化时间显示
+   * @param timestamp 时间戳（字符串或数字）
+   * @returns 格式化后的时间显示字符串
+   */
+  formatTime(timestamp: string | number): string {
+    const date = dayjs(timestamp);
+    const now = dayjs();
+    const diff = now.diff(date);
+
+    // 小于1分钟
+    if (diff < 60 * 1000) {
+      return '刚刚';
+    }
+
+    // 小于1小时
+    if (diff < 60 * 60 * 1000) {
+      return `${Math.floor(diff / (60 * 1000))}分钟前`;
+    }
+
+    // 小于1天
+    if (diff < 24 * 60 * 60 * 1000) {
+      return `${Math.floor(diff / (60 * 60 * 1000))}小时前`;
+    }
+
+    // 小于7天
+    if (diff < 7 * 24 * 60 * 60 * 1000) {
+      return `${Math.floor(diff / (24 * 60 * 60 * 1000))}天前`;
+    }
+
+    // 超过7天显示具体日期
+    return date.format('M月D日 HH:mm');
   },
 
   /**

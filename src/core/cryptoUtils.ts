@@ -6,7 +6,7 @@ import JSEncrypt from 'jsencrypt';
  * 加密工具类
  * 提供 UUID 生成、MD5 哈希、RSA 加密解密、AES 对称加密等功能
  */
-export const cryptoUtils = {
+const cryptoUtils = {
   /**
    * 生成 UUID v4
    * @returns {string} 返回一个随机生成的 UUID v4 字符串
@@ -177,11 +177,11 @@ export const cryptoUtils = {
       // 使用 CryptoJS 进行 AES 解密
       const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
       const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
-      
+
       if (!decryptedText) {
         throw new Error('解密失败，可能是密钥错误或数据损坏');
       }
-      
+
       return decryptedText;
     } catch (error) {
       console.error('AES 解密失败:', error);
@@ -189,3 +189,5 @@ export const cryptoUtils = {
     }
   }
 };
+
+export default cryptoUtils;

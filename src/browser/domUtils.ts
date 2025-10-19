@@ -1,7 +1,7 @@
 /**
  * DOM工具函数（仅在浏览器环境中可用）
  */
-export const domUtils = {
+const domUtils = {
   /**
    * 检查是否在浏览器环境
    * @returns 是否在浏览器环境
@@ -257,4 +257,6 @@ export const domUtils = {
       }
     });
   }
-} as const;
+};
+
+export default domUtils;

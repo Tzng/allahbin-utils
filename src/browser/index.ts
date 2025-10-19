@@ -4,5 +4,5 @@
  */
 
 export { default as cookieUtils } from './cookieUtils';
-export { domUtils } from './domUtils';
+export { default as domUtils } from './domUtils';
 export { default as urlUtils } from './urlUtils';

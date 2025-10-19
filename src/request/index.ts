@@ -2,7 +2,7 @@ import { codeMessage } from './httpCode';
 import { ICacheData, ICallBack, IRequestOption } from './typings';
 import { generateFetchRequest, getRequestUtils, requestErrorIntercept, responseErrorIntercept } from './httpUtils';
 import ReqQueue from './ReqQueue';
-import { cryptoUtils } from '../core/cryptoUtils';
+import cryptoUtils from '../core/cryptoUtils';
 
 /**
  * 状态码检测

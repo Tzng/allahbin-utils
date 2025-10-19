@@ -1,4 +1,4 @@
-import { cryptoUtils } from "../core/cryptoUtils";
+import cryptoUtils from "../core/cryptoUtils";
 
 type IReqQueueInit = {
   maxQueueLength?: number;
@@ -61,10 +61,10 @@ export default class ReqQueue {
     }
     // 获取下当前的时间戳
     const now = new Date().getTime();
-    if (!this.reqQueue[key]) {
-      this.reqQueue[key] = {};
+    if (!this.reqQueue[key!]) {
+      this.reqQueue[key!] = {};
     }
-    this.reqQueue[key][now] = data;
+    this.reqQueue[key!][now] = data;
     this.cacheMethod(this.reqQueue);
   }
 }

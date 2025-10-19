@@ -1,24 +1,25 @@
 // 主入口文件 - 导出所有工具函数
 
 // 核心工具函数（适用于 Node.js、UniApp、React Native 等）
-export * from './core/stringUtils';
-export * from './core/arrayUtils';
-export * from './core/objectUtils';
-export * from './core/dateUtils';
-export * from './core/numberUtils';
-export * from './core/validationUtils';
-export * from './core/asyncUtils';
-export * from './core/colorUtils';
-export * from './core/cryptoUtils';
-export * from './core/pageUtils';
+export { default as stringUtils } from './core/stringUtils';
+export { default as arrayUtils } from './core/arrayUtils';
+export { default as objectUtils } from './core/objectUtils';
+export { default as dateUtils } from './core/dateUtils';
+export { default as numberUtils } from './core/numberUtils';
+export { default as validationUtils } from './core/validationUtils';
+export { default as asyncUtils } from './core/asyncUtils';
+export { default as colorUtils } from './core/colorUtils';
+export { default as cryptoUtils } from './core/cryptoUtils';
+export { default as pageUtils } from './core/pageUtils';
+export type { ITablePage } from './core/pageUtils';
 
 // 浏览器专用工具函数
-export * from './browser/domUtils';
-export * from './browser/cookieUtils';
-export * from './browser/urlUtils';
+export { default as domUtils } from './browser/domUtils';
+export { default as cookieUtils } from './browser/cookieUtils';
+export { default as urlUtils } from './browser/urlUtils';
 
 // 请求工具函数
-export * from './request';
+export { default as request } from './request';
 
 // UniApp 工具函数
 export * from './uniapp';
