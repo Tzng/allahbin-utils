@@ -55,68 +55,7 @@ export const safeGetResponseData = <T>(response: any, defaultValue: T): T => {
   return data !== null ? data : defaultValue
 }
 
-// ==================== 云函数调用工具函数 ====================
 
-/**
- * 通用云函数调用方法
- * @param app CloudBase 应用实例
- * @param functionName 云函数名称
- * @param action 操作类型
- * @param params 参数
- * @returns 云函数执行结果
- */
-export const callCloudFunction = async (
-  app: any,
-  functionName: string,
-  action: string,
-  params?: any
-): Promise<any> => {
-  try {
-    const result = await app.callFunction({
-      name: functionName,
-      data: {
-        action,
-        params
-      }
-    })
-    return result.result
-  } catch (error) {
-    handleError(error, `调用云函数 ${functionName} 失败`)
-  }
-}
-
-/**
- * 带重试机制的云函数调用
- * @param app CloudBase 应用实例
- * @param functionName 云函数名称
- * @param action 操作类型
- * @param params 参数
- * @param retryCount 重试次数，默认3次
- * @returns 云函数执行结果
- */
-export const callCloudFunctionWithRetry = async (
-  app: any,
-  functionName: string,
-  action: string,
-  params?: any,
-  retryCount: number = 3
-): Promise<any> => {
-  let lastError: any
-
-  for (let i = 0; i < retryCount; i++) {
-    try {
-      return await callCloudFunction(app, functionName, action, params)
-    } catch (error) {
-      lastError = error
-      if (i < retryCount - 1) {
-        // 等待一段时间后重试
-        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
-      }
-    }
-  }
-
-  throw lastError
-}
 
 // ==================== 业务数据处理工具函数 ====================
 
@@ -173,72 +112,7 @@ export const createUpdateData = (data: any) => {
   }
 }
 
-// ==================== 用户提示工具函数 ====================
 
-/**
- * 显示成功提示
- * @param title 提示标题
- * @param duration 显示时长，默认1500ms
- */
-export const showSuccessToast = (title: string, duration: number = 1500): void => {
-  uni.showToast({
-    title,
-    icon: 'success',
-    duration
-  })
-}
-
-/**
- * 显示错误提示
- * @param title 提示标题
- * @param duration 显示时长，默认2000ms
- */
-export const showErrorToast = (title: string, duration: number = 2000): void => {
-  uni.showToast({
-    title,
-    icon: 'none',
-    duration
-  })
-}
-
-/**
- * 显示加载提示
- * @param title 提示标题，默认"加载中..."
- */
-export const showLoading = (title: string = '加载中...'): void => {
-  uni.showLoading({
-    title,
-    mask: true
-  })
-}
-
-/**
- * 隐藏加载提示
- */
-export const hideLoading = (): void => {
-  uni.hideLoading()
-}
-
-/**
- * 显示确认对话框
- * @param content 对话框内容
- * @param title 对话框标题，默认"提示"
- * @returns Promise<boolean> 用户是否确认
- */
-export const showConfirmDialog = (content: string, title: string = '提示'): Promise<boolean> => {
-  return new Promise((resolve) => {
-    uni.showModal({
-      title,
-      content,
-      success: (res) => {
-        resolve(res.confirm)
-      },
-      fail: () => {
-        resolve(false)
-      }
-    })
-  })
-}
 
 // ==================== 数据格式化工具函数 ====================
 

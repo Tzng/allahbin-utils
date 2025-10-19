@@ -32,6 +32,15 @@ export interface ITablePage<T> {
   asc?: boolean;
 }
 
+export const defTableData: ITablePage<any> = {
+  current: 0,
+  pages: 0,
+  records: [],
+  list: [],
+  size: 0,
+  total: 0
+};
+
 /**
  * 页面工具函数
  */

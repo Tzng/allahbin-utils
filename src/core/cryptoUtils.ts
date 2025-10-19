@@ -1,4 +1,4 @@
-import { createHash, createCipheriv, createDecipheriv, randomBytes } from 'crypto';
+import CryptoJS from 'crypto-js';
 import { v4 as uuidv4, validate as validateUUID } from 'uuid';
 import JSEncrypt from 'jsencrypt';
 
@@ -38,7 +38,7 @@ export const cryptoUtils = {
    */
   md5(input: string, salt?: string): string {
     const data = salt ? input + salt : input;
-    return createHash('md5').update(data).digest('hex');
+    return CryptoJS.MD5(data).toString();
   },
 
   /**
@@ -143,7 +143,7 @@ export const cryptoUtils = {
    * AES 加密（使用字符串密钥）
    * @param {string} text - 需要加密的文本
    * @param {string} key - 加密密钥（字符串）
-   * @returns {string} 返回加密后的字符串（包含 IV 和密文）
+   * @returns {string} 返回加密后的文本（包含 IV 和密文）
    * @example
    * ```typescript
    * const encrypted = cryptoUtils.aesEncrypt('Hello World', 'mySecretKey123');
@@ -152,21 +152,9 @@ export const cryptoUtils = {
    */
   aesEncrypt(text: string, key: string): string {
     try {
-      // 使用 SHA-256 将字符串密钥转换为固定长度的密钥
-      const keyHash = createHash('sha256').update(key).digest();
-      
-      // 生成随机 IV
-      const iv = randomBytes(16);
-      
-      // 创建加密器
-      const cipher = createCipheriv('aes-256-cbc', keyHash, iv);
-      
-      // 加密文本
-      let encrypted = cipher.update(text, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      
-      // 返回 IV 和密文的组合
-      return iv.toString('hex') + ':' + encrypted;
+      // 使用 CryptoJS 进行 AES 加密
+      const encrypted = CryptoJS.AES.encrypt(text, key).toString();
+      return encrypted;
     } catch (error) {
       console.error('AES 加密失败:', error);
       throw new Error('AES 加密失败');
@@ -186,26 +174,15 @@ export const cryptoUtils = {
    */
   aesDecrypt(encryptedText: string, key: string): string {
     try {
-      // 分离 IV 和密文
-      const parts = encryptedText.split(':');
-      if (parts.length !== 2) {
-        throw new Error('无效的加密文本格式');
+      // 使用 CryptoJS 进行 AES 解密
+      const decrypted = CryptoJS.AES.decrypt(encryptedText, key);
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      
+      if (!decryptedText) {
+        throw new Error('解密失败，可能是密钥错误或数据损坏');
       }
       
-      const iv = Buffer.from(parts[0], 'hex');
-      const encrypted = parts[1];
-      
-      // 使用 SHA-256 将字符串密钥转换为固定长度的密钥
-      const keyHash = createHash('sha256').update(key).digest();
-      
-      // 创建解密器
-      const decipher = createDecipheriv('aes-256-cbc', keyHash, iv);
-      
-      // 解密文本
-      let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
-      
-      return decrypted;
+      return decryptedText;
     } catch (error) {
       console.error('AES 解密失败:', error);
       throw new Error('AES 解密失败');

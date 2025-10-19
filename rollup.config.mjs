@@ -2,6 +2,8 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
+import replace from '@rollup/plugin-replace';
+import alias from '@rollup/plugin-alias';
 import dts from 'rollup-plugin-dts';
 import { readFileSync } from 'fs';
 import { getModuleEntries } from './scripts/scan-modules.mjs';
@@ -53,7 +55,28 @@ export default [
       },
     ],
     plugins: [
-      resolve(),
+      replace({
+        preventAssignment: true,
+        values: {
+          // 替换 Node.js 环境检查
+          'typeof process': '"undefined"',
+          'process.env.NODE_ENV': '"production"',
+        }
+      }),
+      alias({
+        entries: [
+          // 为浏览器环境提供 stream 的空实现
+          { find: 'stream', replacement: 'stream-browserify' },
+          { find: 'util', replacement: 'util' },
+        ]
+      }),
+      resolve({
+        browser: true, // 优先使用浏览器版本
+        preferBuiltins: false, // 不优先使用 Node.js 内置模块
+        exportConditions: ['browser', 'module', 'import', 'default'],
+        // 确保能够解析 axios 内部的相对路径
+        dedupe: ['axios']
+      }),
       commonjs(),
       json(),
       typescript({
@@ -64,7 +87,16 @@ export default [
         outDir: null, // 让 Rollup 处理输出目录
       }),
     ],
-    external: ['fs', 'path', 'url', 'crypto', 'util', 'stream', 'events', 'buffer', 'querystring', 'http', 'https', 'zlib'],
+    external: (id) => {
+      // 对于 Node.js 内置模块，标记为外部
+      const nodeBuiltins = ['fs', 'path', 'url', 'crypto', 'util', 'stream', 'events', 'buffer', 'querystring', 'http', 'https', 'zlib', 'os', 'child_process'];
+      if (nodeBuiltins.includes(id)) {
+        return true;
+      }
+      // 将主要依赖标记为外部，避免打包进来
+      const externalDeps = ['axios', 'crypto-js', 'dayjs', 'jsencrypt', 'uuid'];
+      return externalDeps.includes(id);
+    },
   },
   // 构建 CommonJS 类型定义文件
   {

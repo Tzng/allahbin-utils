@@ -4,3 +4,5 @@
  */
 
 export * from './uniUtils';
+export * from './Tips';
+export * from './cloudUtils';

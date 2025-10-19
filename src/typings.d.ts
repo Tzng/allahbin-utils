@@ -273,7 +273,7 @@ declare global {
       /** 提示的内容 */
       title: string;
       /** 图标 */
-      icon?: 'success' | 'loading' | 'none';
+      icon?: 'success' | 'loading' | 'none' | string;
       /** 自定义图标的本地路径 */
       image?: string;
       /** 提示的延迟时间 */
@@ -334,19 +334,63 @@ declare global {
       confirmText?: string;
       /** 确认按钮的文字颜色，必须是 16 进制格式的颜色字符串 */
       confirmColor?: string;
+      /** 是否显示输入框 */
+      editable?: boolean;
+      /** 输入框的 placeholder */
+      placeholderText?: string;
       /** 接口调用成功的回调函数 */
       success?: (result: {
         /** 为 true 时，表示用户点击了确定按钮 */
         confirm: boolean;
         /** 为 true 时，表示用户点击了取消 */
         cancel: boolean;
+        /** 如果 editable 为 true，用户输入的内容 */
+        content?: string;
       }) => void;
       /** 接口调用失败的回调函数 */
       fail?: () => void;
       /** 接口调用结束的回调函数（调用成功、失败都会执行） */
       complete?: () => void;
     }) => void;
-
+    /**
+     * 从底部向上弹出操作菜单
+     */
+    showActionSheet: (options: {
+      /** 提示的标题 */
+      title?: string;
+      /**
+       * 警示文案（同菜单标题）微信小程序（仅真机有效）、抖音小程序、小红书小程序
+       */
+      alertText?: string;
+      /** 操作菜单的配置项 */
+      itemList: string[];
+      /**
+       * 按钮的文字颜色，字符串格式，默认为"#000000"
+       */
+      itemColor?: string;
+      /** 接口调用成功的回调函数 */
+      success?: (result: {
+        /** 用户点击的操作菜单的索引 */
+        tapIndex: number;
+      }) => void;
+      /** 接口调用失败的回调函数 */
+      fail?: () => void;
+      /** 接口调用结束的回调函数（调用成功、失败都会执行） */
+      complete?: () => void;
+      /**
+       * 大屏设备弹出原生选择按钮框的指示区域，默认居中显示
+       */
+      popover?: {
+        /** 指示区域坐标，使用原生 navigationBar 时一般需要加上 navigationBar 的高度 */
+        top?: number;
+        /** 指示区域坐标 */
+        left?: number;
+        /** 指示区域宽度 */
+        width?: number;
+        /** 指示区域高度 */
+        height?: number;
+      };
+    }) => void;
     /**
      * 将数据存储在本地缓存中指定的 key 中
      * @param options 存储配置

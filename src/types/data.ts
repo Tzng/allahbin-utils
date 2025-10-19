@@ -73,11 +73,18 @@ export interface IBaseFilter {
   /**
    * 地区码
    */
-  adminCode?: string;
-  /**
-   * 店铺id
-   */
-  shopId?: string;
+  areaCode?: string;
+}
+
+export const defBaseFilter: IBaseFilter = {
+  keyword: undefined,
+  startDay: undefined,
+  endDay: undefined,
+  pageNum: 1,
+  pageSize: 10,
+  current: 1,
+  sort: undefined,
+  areaCode: undefined
 }
 
 /**
