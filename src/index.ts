@@ -10,7 +10,7 @@ export { default as validationUtils } from './core/validationUtils';
 export { default as asyncUtils } from './core/asyncUtils';
 export { default as colorUtils } from './core/colorUtils';
 export { default as cryptoUtils } from './core/cryptoUtils';
-export { default as pageUtils } from './core/pageUtils';
+export { default as pageUtils, defTableData } from './core/pageUtils';
 export type { ITablePage } from './core/pageUtils';
 
 // 浏览器专用工具函数

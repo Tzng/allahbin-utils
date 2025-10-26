@@ -65,15 +65,16 @@ export const safeGetResponseData = <T>(response: any, defaultValue: T): T => {
  * @param requiredFields 必填字段数组
  * @returns 验证结果
  */
-export const validateRequiredFields = (data: any, requiredFields: string[]): {
+export const validateRequiredFields = (data: any, requiredFields?: string[]): {
   isValid: boolean
   missingFields: string[]
 } => {
   const missingFields: string[] = []
-
-  for (const field of requiredFields) {
-    if (!data[field] && data[field] !== 0) {
-      missingFields.push(field)
+  if (requiredFields && requiredFields.length >= 0) {
+    for (const field of requiredFields) {
+      if (!data[field] && data[field] !== 0) {
+        missingFields.push(field)
+      }
     }
   }
 
