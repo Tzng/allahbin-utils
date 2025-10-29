@@ -1,11 +1,11 @@
-import { ICacheData, ICallBack, IRequestOption } from './typings';
-import { codeMessage, defOption } from './httpCode';
-import ReqQueue from './ReqQueue';
-import cookieUtils from '../browser/cookieUtils';
-import uniRequest from './uniRequest';
+import { ICacheData, ICallBack, IRequestOption } from './../typings';
+import { codeMessage, defOption } from './../httpCode';
+import ReqQueue from './../ReqQueue';
+import cookieUtils from '../../browser/cookieUtils';
+import uniRequest from './../uniRequest';
 import axios from 'axios';
-import { buildQueryParams } from '../browser/urlUtils';
-import stringUtils from '../core/stringUtils';
+import { buildQueryParams } from '../../browser/urlUtils';
+import stringUtils from '../../core/stringUtils';
 
 const isExit = (str?: string | number) => {
   if (str === '') {

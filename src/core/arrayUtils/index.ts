@@ -2,7 +2,7 @@
  * 数组工具函数
  */
 
-import { IOptions2 } from "../types/data";
+import { IOptions2 } from "../../types/data";
 
 /**
  * 数组工具对象

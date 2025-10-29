@@ -81,21 +81,21 @@ export const cloudUtils = {
 
   /**
    * 处理响应
-   * @param result 云函数返回结果
+   * @param data 云函数返回结果
    * @param successMessage 成功提示消息
    * @returns 处理后的结果数据
    */
-  handleResponse(result: any, successMessage?: string) {
-    if (result.result?.code === 0) {
+  handleResponse(data: any, successMessage?: string) {
+    if (data?.code === 0) {
       if (successMessage) {
         uni.showToast({
           title: successMessage,
           icon: 'success'
         })
       }
-      return result.result.result
+      return data.result
     } else {
-      const errorMessage = result.result?.message || '操作失败'
+      const errorMessage = data?.message || '操作失败'
       uni.showToast({
         title: errorMessage,
         icon: 'none'

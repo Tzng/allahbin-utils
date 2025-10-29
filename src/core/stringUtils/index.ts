@@ -2,7 +2,7 @@
  * 字符串工具函数
  */
 
-import dateUtils from "./dateUtils";
+import dateUtils from "./../dateUtils";
 
 /**
  * 字符串工具对象

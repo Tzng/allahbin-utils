@@ -1,4 +1,4 @@
-import { IRequestOption } from "./typings";
+import { IRequestOption } from "./../typings";
 
 /**
  * HTTP编码属性
