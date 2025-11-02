@@ -10,10 +10,10 @@ import cryptoUtils from '../core/cryptoUtils';
  * @param opt 请求配置
  * @return {*}
  */
-const checkStatus = (response: any, opt: IRequestOption) => {
+const checkStatus = async (response: any, opt: IRequestOption) => {
   if (opt.cacheLog && !opt.isFile) {
     // 存储下日志
-    ReqQueue.addReqQueue(response, opt.reqUuid);
+    await ReqQueue.addReqQueue(response, opt.reqUuid);
   }
   if (response.status >= 200 && response.status < 300) {
     // 如果是浏览器，并且没有指定fetch，就返回data
@@ -57,14 +57,14 @@ const binRequest = async (
 ): Promise<any> => {
   // 判断是否开启了日志
   if (option.cacheLog) {
-    option.reqUuid = cryptoUtils.uuid();
+    option.reqUuid = await cryptoUtils.uuid();
     ReqQueue.init({
       cacheMethod: option.cacheMethod,
       maxQueueLength: option.maxCacheLog
     });
-    ReqQueue.addReqQueue(url, option.reqUuid);
+    await ReqQueue.addReqQueue(url, option.reqUuid);
     // 存储下日志
-    ReqQueue.addReqQueue(option, option.reqUuid);
+    await ReqQueue.addReqQueue(option, option.reqUuid);
   }
   // 地址拦截
   if (url.length === 0) {
@@ -144,7 +144,7 @@ const binRequest = async (
   return (
     requestUtil(newOptions.url!, newOptions as any)
       // 先对请求状态码进行检查
-      .then((res: any) => checkStatus(res, newOptions))
+      .then(async (res: any) => await checkStatus(res, newOptions))
       // 检查响应数据
       .then((resJson: any) => responseErrorIntercept(resJson, newOptions, url, callback))
       .catch((e: any) => {

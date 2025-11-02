@@ -1,6 +1,179 @@
 import CryptoJS from 'crypto-js';
-import { v4 as uuidv4, validate as validateUUID } from 'uuid';
-import JSEncrypt from 'jsencrypt';
+
+/**
+ * 检测是否为浏览器环境
+ * @returns {boolean} 如果是浏览器环境返回 true，否则返回 false
+ */
+function isBrowser(): boolean {
+  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
+}
+
+/**
+ * 动态导入 uuid 模块
+ * @returns {Promise<any>} 返回 uuid 模块的 Promise
+ */
+async function loadUUID(): Promise<any> {
+  try {
+    // 动态导入 uuid 模块以解决 CommonJS/ESM 兼容性问题
+    const uuid = await import('uuid');
+    return uuid;
+  } catch (error) {
+    throw new Error(`加载 uuid 模块失败: ${error}`);
+  }
+}
+
+/**
+ * 延迟加载 JSEncrypt（仅在浏览器环境中）
+ * @returns {Promise<any>} 返回 JSEncrypt 类的 Promise
+ */
+async function loadJSEncrypt(): Promise<any> {
+  if (!isBrowser()) {
+    throw new Error('JSEncrypt 只能在浏览器环境中使用');
+  }
+  
+  try {
+    // 动态导入 JSEncrypt
+    const { default: JSEncrypt } = await import('jsencrypt');
+    return JSEncrypt;
+  } catch (error) {
+    throw new Error(`加载 JSEncrypt 失败: ${error}`);
+  }
+}
+
+/**
+ * 延迟加载 Node.js crypto 模块（仅在 Node.js 环境中）
+ * @returns {Promise<any>} 返回 crypto 模块的 Promise
+ */
+async function loadNodeCrypto(): Promise<any> {
+  if (isBrowser()) {
+    throw new Error('Node.js crypto 模块只能在 Node.js 环境中使用');
+  }
+  
+  try {
+    // 动态导入 Node.js crypto 模块
+    const crypto = await import('crypto');
+    return crypto;
+  } catch (error) {
+    throw new Error(`加载 Node.js crypto 模块失败: ${error}`);
+  }
+}
+
+/**
+ * Node.js 环境下的 RSA 加密
+ * @param {string} text - 需要加密的文本
+ * @param {string} publicKey - RSA 公钥（PEM 格式）
+ * @returns {Promise<string | false>} 返回加密后的 Base64 字符串，失败返回 false
+ */
+async function rsaEncryptNode(text: string, publicKey: string): Promise<string | false> {
+  try {
+    const crypto = await loadNodeCrypto();
+    const buffer = Buffer.from(text, 'utf8');
+    const encrypted = crypto.publicEncrypt(publicKey, buffer);
+    return encrypted.toString('base64');
+  } catch (error) {
+    console.error('Node.js RSA 加密失败:', error);
+    return false;
+  }
+}
+
+/**
+ * Node.js 环境下的 RSA 解密
+ * @param {string} encryptedText - 需要解密的 Base64 字符串
+ * @param {string} privateKey - RSA 私钥（PEM 格式）
+ * @returns {Promise<string | false>} 返回解密后的原文，失败返回 false
+ */
+async function rsaDecryptNode(encryptedText: string, privateKey: string): Promise<string | false> {
+  try {
+    const crypto = await loadNodeCrypto();
+    const buffer = Buffer.from(encryptedText, 'base64');
+    const decrypted = crypto.privateDecrypt(privateKey, buffer);
+    return decrypted.toString('utf8');
+  } catch (error) {
+    console.error('Node.js RSA 解密失败:', error);
+    return false;
+  }
+}
+
+/**
+ * Node.js 环境下生成 RSA 密钥对
+ * @param {number} keySize - 密钥长度
+ * @returns {Promise<{ publicKey: string; privateKey: string } | null>} 返回包含公钥和私钥的对象，失败返回 null
+ */
+async function generateRSAKeyPairNode(keySize: number): Promise<{ publicKey: string; privateKey: string } | null> {
+  try {
+    const crypto = await loadNodeCrypto();
+    const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
+      modulusLength: keySize,
+      publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem'
+      }
+    });
+    return { publicKey, privateKey };
+  } catch (error) {
+    console.error('Node.js RSA 密钥对生成失败:', error);
+    return null;
+  }
+}
+
+/**
+ * 浏览器环境下的 RSA 加密
+ * @param {string} text - 需要加密的文本
+ * @param {string} publicKey - RSA 公钥（PEM 格式）
+ * @returns {Promise<string | false>} 返回加密后的 Base64 字符串，失败返回 false
+ */
+async function rsaEncryptBrowser(text: string, publicKey: string): Promise<string | false> {
+  try {
+    const JSEncrypt = await loadJSEncrypt();
+    const encrypt = new JSEncrypt();
+    encrypt.setPublicKey(publicKey);
+    return encrypt.encrypt(text);
+  } catch (error) {
+    console.error('浏览器 RSA 加密失败:', error);
+    return false;
+  }
+}
+
+/**
+ * 浏览器环境下的 RSA 解密
+ * @param {string} encryptedText - 需要解密的 Base64 字符串
+ * @param {string} privateKey - RSA 私钥（PEM 格式）
+ * @returns {Promise<string | false>} 返回解密后的原文，失败返回 false
+ */
+async function rsaDecryptBrowser(encryptedText: string, privateKey: string): Promise<string | false> {
+  try {
+    const JSEncrypt = await loadJSEncrypt();
+    const decrypt = new JSEncrypt();
+    decrypt.setPrivateKey(privateKey);
+    return decrypt.decrypt(encryptedText);
+  } catch (error) {
+    console.error('浏览器 RSA 解密失败:', error);
+    return false;
+  }
+}
+
+/**
+ * 浏览器环境下生成 RSA 密钥对
+ * @param {number} keySize - 密钥长度
+ * @returns {Promise<{ publicKey: string; privateKey: string } | null>} 返回包含公钥和私钥的对象，失败返回 null
+ */
+async function generateRSAKeyPairBrowser(keySize: number): Promise<{ publicKey: string; privateKey: string } | null> {
+  try {
+    const JSEncrypt = await loadJSEncrypt();
+    const encrypt = new JSEncrypt({ default_key_size: keySize.toString() });
+    return {
+      publicKey: encrypt.getPublicKey(),
+      privateKey: encrypt.getPrivateKey()
+    };
+  } catch (error) {
+    console.error('浏览器 RSA 密钥对生成失败:', error);
+    return null;
+  }
+}
 
 /**
  * 加密工具类
@@ -9,14 +182,15 @@ import JSEncrypt from 'jsencrypt';
 const cryptoUtils = {
   /**
    * 生成 UUID v4
-   * @returns {string} 返回一个随机生成的 UUID v4 字符串
+   * @returns {Promise<string>} 返回一个随机生成的 UUID v4 字符串
    * @example
    * ```typescript
-   * const uuid = cryptoUtils.uuid();
+   * const uuid = await cryptoUtils.uuid();
    * console.log(uuid); // "550e8400e29b41d4a716446655440000"
    * ```
    */
-  uuid(): string {
+  async uuid(): Promise<string> {
+    const { v4: uuidv4 } = await loadUUID();
     return uuidv4().replace(/-/g, '');
   },
 
@@ -57,86 +231,86 @@ const cryptoUtils = {
   /**
    * 验证 UUID 格式是否正确
    * @param {string} uuid - 需要验证的 UUID 字符串
-   * @returns {boolean} 如果格式正确返回 true，否则返回 false
+   * @returns {Promise<boolean>} 如果格式正确返回 true，否则返回 false
    * @example
    * ```typescript
-   * const isValid = cryptoUtils.isValidUUID('550e8400-e29b-41d4-a716-446655440000');
+   * const isValid = await cryptoUtils.isValidUUID('550e8400-e29b-41d4-a716-446655440000');
    * console.log(isValid); // true
    * ```
    */
-  isValidUUID(uuid: string): boolean {
+  async isValidUUID(uuid: string): Promise<boolean> {
+    const { validate: validateUUID } = await loadUUID();
     return validateUUID(uuid);
   },
 
   /**
-   * RSA 加密
+   * RSA 加密（跨环境兼容）
+   * 在 Node.js 环境中使用内置 crypto 模块，在浏览器环境中使用 jsencrypt
    * @param {string} text - 需要加密的文本
    * @param {string} publicKey - RSA 公钥（PEM 格式）
-   * @returns {string | false} 返回加密后的 Base64 字符串，失败返回 false
+   * @returns {Promise<string | false>} 返回加密后的 Base64 字符串，失败返回 false
    * @example
    * ```typescript
    * const publicKey = `-----BEGIN PUBLIC KEY-----
-   * MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC...
+   * MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7vbqajDw4o...
    * -----END PUBLIC KEY-----`;
    * 
-   * const encrypted = cryptoUtils.rsaEncrypt('Hello World', publicKey);
+   * const encrypted = await cryptoUtils.rsaEncrypt('Hello World', publicKey);
    * console.log(encrypted); // "base64 encrypted string"
    * ```
    */
-  rsaEncrypt(text: string, publicKey: string): string | false {
-    try {
-      const encrypt = new JSEncrypt();
-      encrypt.setPublicKey(publicKey);
-      return encrypt.encrypt(text);
-    } catch (error) {
-      console.error('RSA 加密失败:', error);
-      return false;
+  async rsaEncrypt(text: string, publicKey: string): Promise<string | false> {
+    if (isBrowser()) {
+      return await rsaEncryptBrowser(text, publicKey);
+    } else {
+      return await rsaEncryptNode(text, publicKey);
     }
   },
 
   /**
-   * RSA 解密
+   * RSA 解密（跨环境兼容）
+   * 在 Node.js 环境中使用内置 crypto 模块，在浏览器环境中使用 jsencrypt
    * @param {string} encryptedText - 需要解密的 Base64 字符串
    * @param {string} privateKey - RSA 私钥（PEM 格式）
-   * @returns {string | false} 返回解密后的原文，失败返回 false
+   * @returns {Promise<string | false>} 返回解密后的原文，失败返回 false
    * @example
    * ```typescript
    * const privateKey = `-----BEGIN PRIVATE KEY-----
    * MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAL...
    * -----END PRIVATE KEY-----`;
    * 
-   * const decrypted = cryptoUtils.rsaDecrypt(encryptedText, privateKey);
+   * const decrypted = await cryptoUtils.rsaDecrypt(encryptedText, privateKey);
    * console.log(decrypted); // "Hello World"
    * ```
    */
-  rsaDecrypt(encryptedText: string, privateKey: string): string | false {
-    try {
-      const decrypt = new JSEncrypt();
-      decrypt.setPrivateKey(privateKey);
-      return decrypt.decrypt(encryptedText);
-    } catch (error) {
-      console.error('RSA 解密失败:', error);
-      return false;
+  async rsaDecrypt(encryptedText: string, privateKey: string): Promise<string | false> {
+    if (isBrowser()) {
+      return await rsaDecryptBrowser(encryptedText, privateKey);
+    } else {
+      return await rsaDecryptNode(encryptedText, privateKey);
     }
   },
 
   /**
-   * 生成 RSA 密钥对
+   * 生成 RSA 密钥对（跨环境兼容）
+   * 在 Node.js 环境中使用内置 crypto 模块，在浏览器环境中使用 jsencrypt
    * @param {number} [keySize=1024] - 密钥长度，默认 1024 位
-   * @returns {object} 返回包含公钥和私钥的对象
+   * @returns {Promise<{ publicKey: string; privateKey: string } | null>} 返回包含公钥和私钥的对象，失败返回 null
    * @example
    * ```typescript
-   * const keyPair = cryptoUtils.generateRSAKeyPair(2048);
-   * console.log(keyPair.publicKey);  // "-----BEGIN PUBLIC KEY-----..."
-   * console.log(keyPair.privateKey); // "-----BEGIN PRIVATE KEY-----..."
+   * const keyPair = await cryptoUtils.generateRSAKeyPair(2048);
+   * if (keyPair) {
+   *   console.log(keyPair.publicKey);  // "-----BEGIN PUBLIC KEY-----..."
+   *   console.log(keyPair.privateKey); // "-----BEGIN PRIVATE KEY-----..."
+   * }
    * ```
    */
-  generateRSAKeyPair(keySize: number = 1024): { publicKey: string; privateKey: string } {
-    const encrypt = new JSEncrypt({ default_key_size: keySize.toString() });
-    return {
-      publicKey: encrypt.getPublicKey(),
-      privateKey: encrypt.getPrivateKey()
-    };
+  async generateRSAKeyPair(keySize: number = 1024): Promise<{ publicKey: string; privateKey: string } | null> {
+    if (isBrowser()) {
+      return await generateRSAKeyPairBrowser(keySize);
+    } else {
+      return await generateRSAKeyPairNode(keySize);
+    }
   },
 
   /**

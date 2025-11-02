@@ -50,9 +50,9 @@ export default class ReqQueue {
    * @param data
    * @param key
    */
-  static addReqQueue(data: any, key?: string) {
+  static async addReqQueue(data: any, key?: string) {
     if (!key) {
-      key = cryptoUtils.uuid();
+      key = await cryptoUtils.uuid();
     }
     const keys = Object.keys(this.reqQueue);
     if (keys.length >= this.maxQueueLength) {
