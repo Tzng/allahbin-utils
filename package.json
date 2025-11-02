@@ -1,6 +1,6 @@
 {
   "name": "@allahbin/utils",
-  "version": "0.0.15",
+  "version": "0.0.17",
   "description": "A utility library for common JavaScript/TypeScript functions",
   "main": "dist/index.cjs",
   "module": "dist/esm/index.js",

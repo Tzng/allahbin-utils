@@ -33,25 +33,16 @@ export const handleError = (error: any, context?: string): void => {
 }
 
 /**
- * 获取响应数据 - 从标准响应结构中提取数据
- * @param response 响应对象
- * @returns 响应数据或null
- */
-export const getResponseData = <T = any>(response: any): T | null => {
-  if (response && response.code === 0) {
-    return response.result
-  }
-  return null
-}
-
-/**
  * 安全获取响应数据 - 失败时返回默认值
  * @param response 响应对象
  * @param defaultValue 默认值
  * @returns 响应数据或默认值
  */
 export const safeGetResponseData = <T>(response: any, defaultValue: T): T => {
-  const data = getResponseData<T>(response)
+  let data = null
+  if (response && response.code === 0) {
+    data = response.result
+  }
   return data !== null ? data : defaultValue
 }
 

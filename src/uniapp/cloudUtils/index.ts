@@ -14,7 +14,15 @@ type ICallParams<T> = {
   /**
    * 异常的时候的默认值
    */
-  errorDefault?: T
+  errorDefault?: T,
+  /**
+   * 成功时的提示
+   */
+  successMessage?: string,
+  /**
+   * 失败时的提示
+   */
+  errorMessage?: string,
 }
 
 /**
@@ -38,8 +46,12 @@ export const cloudUtils = {
           params: params.params
         }
       })
+      // 提示信息处理
+      if(params.successMessage){
+        return cloudUtils.handleResponse(result.result, params.successMessage)
+      }
       // 使用 safeGetResponseData 确保返回安全的数据结构
-      return safeGetResponseData(result, params.errorDefault) as T
+      return safeGetResponseData(result.result, params.errorDefault) as T
     } catch (error) {
       handleError(error, `调用云函数 ${params.function} 失败`)
     }

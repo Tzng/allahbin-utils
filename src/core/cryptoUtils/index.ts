@@ -23,6 +23,64 @@ async function loadUUID(): Promise<any> {
 }
 
 /**
+ * 检测是否支持 crypto.getRandomValues
+ * @returns {boolean} 如果支持返回 true，否则返回 false
+ */
+function supportsCryptoGetRandomValues(): boolean {
+  return typeof crypto !== 'undefined' &&
+    typeof crypto.getRandomValues === 'function';
+}
+
+/**
+ * 生成兼容性的随机字节数组
+ * @param {number} size - 需要生成的字节数
+ * @returns {Uint8Array} 随机字节数组
+ */
+function getRandomBytes(size: number): Uint8Array {
+  const bytes = new Uint8Array(size);
+
+  // 优先使用 crypto.getRandomValues（现代浏览器和 Node.js）
+  if (supportsCryptoGetRandomValues()) {
+    crypto.getRandomValues(bytes);
+    return bytes;
+  }
+
+  // 降级方案：使用 Math.random()
+  for (let i = 0; i < size; i++) {
+    bytes[i] = Math.floor(Math.random() * 256);
+  }
+
+  return bytes;
+}
+
+/**
+ * 生成兼容性的 UUID v4
+ * 当 crypto.getRandomValues 不可用时使用降级方案
+ * @returns {string} UUID v4 字符串
+ */
+function generateCompatibleUUID(): string {
+  const bytes = getRandomBytes(16);
+
+  // 设置版本号 (4) 和变体位
+  bytes[6] = (bytes[6] & 0x0f) | 0x40; // 版本 4
+  bytes[8] = (bytes[8] & 0x3f) | 0x80; // 变体位
+
+  // 转换为十六进制字符串
+  const hex = Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  // 格式化为标准 UUID 格式
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20, 32)
+  ].join('-');
+}
+
+/**
  * 延迟加载 JSEncrypt（仅在浏览器环境中）
  * @returns {Promise<any>} 返回 JSEncrypt 类的 Promise
  */
@@ -30,7 +88,7 @@ async function loadJSEncrypt(): Promise<any> {
   if (!isBrowser()) {
     throw new Error('JSEncrypt 只能在浏览器环境中使用');
   }
-  
+
   try {
     // 动态导入 JSEncrypt
     const { default: JSEncrypt } = await import('jsencrypt');
@@ -48,7 +106,7 @@ async function loadNodeCrypto(): Promise<any> {
   if (isBrowser()) {
     throw new Error('Node.js crypto 模块只能在 Node.js 环境中使用');
   }
-  
+
   try {
     // 动态导入 Node.js crypto 模块
     const crypto = await import('crypto');
@@ -190,8 +248,21 @@ const cryptoUtils = {
    * ```
    */
   async uuid(): Promise<string> {
-    const { v4: uuidv4 } = await loadUUID();
-    return uuidv4().replace(/-/g, '');
+    try {
+      // 优先尝试使用 uuid 库
+      if (supportsCryptoGetRandomValues()) {
+        const { v4: uuidv4 } = await loadUUID();
+        return uuidv4().replace(/-/g, '');
+      } else {
+        // 在不支持 crypto.getRandomValues 的环境中使用兼容性方案
+        console.warn('crypto.getRandomValues 不可用，使用兼容性 UUID 生成方案');
+        return generateCompatibleUUID().replace(/-/g, '');
+      }
+    } catch (error) {
+      // 如果 uuid 库加载失败，也使用兼容性方案
+      console.warn('UUID 库加载失败，使用兼容性 UUID 生成方案:', error);
+      return generateCompatibleUUID().replace(/-/g, '');
+    }
   },
 
   /**
@@ -239,8 +310,14 @@ const cryptoUtils = {
    * ```
    */
   async isValidUUID(uuid: string): Promise<boolean> {
-    const { validate: validateUUID } = await loadUUID();
-    return validateUUID(uuid);
+    try {
+      const { validate: validateUUID } = await loadUUID();
+      return validateUUID(uuid);
+    } catch (error) {
+      // 如果 uuid 库不可用，使用正则表达式验证
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      return uuidRegex.test(uuid);
+    }
   },
 
   /**
