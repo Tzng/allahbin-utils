@@ -26,12 +26,12 @@ export default [
         format: 'cjs',
         sourcemap: true,
         entryFileNames: (chunkInfo) => {
-          // 保持原目录结构
+          // 保持原目录结构，CommonJS 使用 .cjs 扩展名
           const name = chunkInfo.name;
           if (name === 'index') {
-            return 'index.js';
+            return 'index.cjs';
           }
-          return `${name}.js`;
+          return `${name}.cjs`;
         },
         chunkFileNames: 'chunks/[name]-[hash].js',
         preserveModules: true,
