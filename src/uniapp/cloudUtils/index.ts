@@ -1,21 +1,8 @@
+import { handleError } from "../uniUtils"
+
 /**
  * 云函数工具类
  * 提供云函数调用、重试、响应处理等功能
- */
-
-/**
- * 处理错误响应 - 统一错误处理和抛出
- * @param error 错误对象
- * @param context 错误上下文描述
- */
-const handleError = (error: any, context?: string): void => {
-  const errorMessage = context ? `${context}: ${error.message || error}` : error.message || error
-  console.error('Service error:', errorMessage)
-  throw error
-}
-
-/**
- * 云函数工具对象
  */
 export const cloudUtils = {
   /**
@@ -26,12 +13,12 @@ export const cloudUtils = {
    * @param params 参数
    * @returns 云函数执行结果
    */
-  async call(
+  async call<T = any>(
     app: any,
     functionName: string,
     action: string,
     params?: any
-  ): Promise<any> {
+  ): Promise<T> {
     try {
       const result = await app.callFunction({
         name: functionName,
@@ -40,10 +27,11 @@ export const cloudUtils = {
           params
         }
       })
-      return result.result
+      return result.result as T
     } catch (error) {
       handleError(error, `调用云函数 ${functionName} 失败`)
     }
+    return null as T
   },
 
   /**

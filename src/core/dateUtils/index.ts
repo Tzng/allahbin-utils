@@ -15,6 +15,7 @@ const dateUtils = {
    * @returns 格式化后的日期字符串
    */
   formatDate(date: Date | number | string, format = 'YYYY-MM-DD HH:mm:ss'): string {
+  if (!date) return '未知';
     return dayjs(date).format(format);
   },
 
