@@ -1,4 +1,21 @@
-import { handleError } from "../uniUtils"
+import { handleError, safeGetResponseData } from "../uniUtils"
+
+/**
+ * 云函数调用参数接口
+ * 用于统一封装调用云函数时所需的参数
+ */
+type ICallParams<T> = {
+  /** 云函数名称 */
+  function: string
+  /** 云函数内部操作类型 */
+  action: string
+  /** 传递给云函数的额外参数 */
+  params?: any,
+  /**
+   * 异常的时候的默认值
+   */
+  errorDefault?: T
+}
 
 /**
  * 云函数工具类
@@ -8,28 +25,23 @@ export const cloudUtils = {
   /**
    * 调用云函数
    * @param app CloudBase 应用实例
-   * @param functionName 云函数名称
-   * @param action 操作类型
-   * @param params 参数
+   * @param params 操作参数
    * @returns 云函数执行结果
    */
-  async call<T = any>(
-    app: any,
-    functionName: string,
-    action: string,
-    params?: any
+  async call<T = any>(app: any, params: ICallParams<T>
   ): Promise<T> {
     try {
       const result = await app.callFunction({
-        name: functionName,
+        name: params.function,
         data: {
-          action,
-          params
+          action: params.action,
+          params: params.params
         }
       })
-      return result.result as T
+      // 使用 safeGetResponseData 确保返回安全的数据结构
+      return safeGetResponseData(result, params.errorDefault) as T
     } catch (error) {
-      handleError(error, `调用云函数 ${functionName} 失败`)
+      handleError(error, `调用云函数 ${params.function} 失败`)
     }
     return null as T
   },
@@ -54,7 +66,11 @@ export const cloudUtils = {
 
     for (let i = 0; i < retryCount; i++) {
       try {
-        return await this.call(app, functionName, action, params)
+        return await this.call(app, {
+          function: functionName,
+          action,
+          params
+        })
       } catch (error) {
         lastError = error
         if (i < retryCount - 1) {
